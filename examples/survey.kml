@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+<Placemark id="plot-1"><name>Bengaluru sample plot</name><ExtendedData><Data name="owner"><value>Demo</value></Data></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>77.59,12.97 77.591,12.97 77.591,12.971 77.59,12.971 77.59,12.97</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark>
+<Placemark id="road-1"><name>Survey line</name><LineString><coordinates>77.59,12.97 77.591,12.971</coordinates></LineString></Placemark>
+<Placemark id="marker-1"><Point><coordinates>77.59,12.97</coordinates></Point></Placemark>
+</Document></kml>

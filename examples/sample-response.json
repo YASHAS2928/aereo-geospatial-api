@@ -1,0 +1,115 @@
+{
+  "upload": {
+    "id": "ca123ae5-e331-44f6-b98a-0ad4b0e7086b",
+    "filename": "survey.kml",
+    "feature_count": 3,
+    "crs": "EPSG:4326",
+    "status": "COMPLETED",
+    "measured_count": 2,
+    "skipped_count": 1,
+    "checksum_sha256": "1be5689b05167332978604e0ff21d4ad8d8df23c2994b0e0daab9c63e3e4a488",
+    "size_bytes": 653,
+    "created_at": "2026-10-07T18:19:31.666621Z"
+  },
+  "measurements": {
+    "file_id": "ca123ae5-e331-44f6-b98a-0ad4b0e7086b",
+    "count": 3,
+    "next_offset": null,
+    "features": [
+      {
+        "index": 0,
+        "source_id": "plot-1",
+        "geometry_type": "Polygon",
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                77.59,
+                12.97
+              ],
+              [
+                77.591,
+                12.97
+              ],
+              [
+                77.591,
+                12.971
+              ],
+              [
+                77.59,
+                12.971
+              ],
+              [
+                77.59,
+                12.97
+              ]
+            ]
+          ]
+        },
+        "source_geometry_xml": null,
+        "properties": {
+          "name": "Bengaluru sample plot",
+          "owner": "Demo"
+        },
+        "source_crs": "EPSG:4326",
+        "measurement_status": "MEASURED",
+        "measurement_type": "area",
+        "value": 12003.110059674054,
+        "unit": "m2",
+        "measurement_crs": "PROJCRS[\"unknown\",BASEGEOGCRS[\"unknown\",DATUM[\"World Geodetic System 1984\",ELLIPSOID[\"WGS 84\",6378137,298.257223563,LENGTHUNIT[\"metre\",1]],ID[\"EPSG\",6326]],PRIMEM[\"Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8901]]],CONVERSION[\"unknown\",METHOD[\"Lambert Azimuthal Equal Area\",ID[\"EPSG\",9820]],PARAMETER[\"Latitude of natural origin\",12.9705,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8801]],PARAMETER[\"Longitude of natural origin\",77.5905,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8802]],PARAMETER[\"False easting\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8806]],PARAMETER[\"False northing\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8807]]],CS[Cartesian,2],AXIS[\"(E)\",east,ORDER[1],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]],AXIS[\"(N)\",north,ORDER[2],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]]]",
+        "warning_code": null
+      },
+      {
+        "index": 1,
+        "source_id": "road-1",
+        "geometry_type": "LineString",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              77.59,
+              12.97
+            ],
+            [
+              77.591,
+              12.971
+            ]
+          ]
+        },
+        "source_geometry_xml": null,
+        "properties": {
+          "name": "Survey line"
+        },
+        "source_crs": "EPSG:4326",
+        "measurement_status": "MEASURED",
+        "measurement_type": "length",
+        "value": 154.95408496097167,
+        "unit": "m",
+        "measurement_crs": "PROJCRS[\"unknown\",BASEGEOGCRS[\"unknown\",DATUM[\"World Geodetic System 1984\",ELLIPSOID[\"WGS 84\",6378137,298.257223563,LENGTHUNIT[\"metre\",1]],ID[\"EPSG\",6326]],PRIMEM[\"Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8901]]],CONVERSION[\"unknown\",METHOD[\"Azimuthal Equidistant\",ID[\"EPSG\",1125]],PARAMETER[\"Latitude of natural origin\",12.9705,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8801]],PARAMETER[\"Longitude of natural origin\",77.5905,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8802]],PARAMETER[\"False easting\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8806]],PARAMETER[\"False northing\",0,LENGTHUNIT[\"metre\",1],ID[\"EPSG\",8807]]],CS[Cartesian,2],AXIS[\"(E)\",east,ORDER[1],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]],AXIS[\"(N)\",north,ORDER[2],LENGTHUNIT[\"metre\",1,ID[\"EPSG\",9001]]]]",
+        "warning_code": null
+      },
+      {
+        "index": 2,
+        "source_id": "marker-1",
+        "geometry_type": "Point",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            77.59,
+            12.97
+          ]
+        },
+        "source_geometry_xml": null,
+        "properties": {},
+        "source_crs": "EPSG:4326",
+        "measurement_status": "NOT_APPLICABLE",
+        "measurement_type": null,
+        "value": null,
+        "unit": null,
+        "measurement_crs": null,
+        "warning_code": null
+      }
+    ]
+  }
+}
