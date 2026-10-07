@@ -1,0 +1,44 @@
+name: Verify API
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: aereo
+          POSTGRES_PASSWORD: aereo
+          POSTGRES_DB: aereo
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U aereo"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-dev.lock && pip install --no-deps -e .
+      - run: python -m ruff check . && python -m ruff format --check .
+      - run: python -m pytest -q
+      - name: PostgreSQL migrations and API tests
+        env:
+          DATABASE_URL: postgresql+psycopg://aereo:aereo@localhost:5432/aereo
+          TEST_DATABASE_URL: postgresql+psycopg://aereo:aereo@localhost:5432/aereo
+        run: python -m alembic upgrade head && python -m alembic check && python -m pytest -q
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up --build -d --wait
+      - name: End-to-end upload
+        run: |
+          for attempt in $(seq 1 30); do
+            curl -fsS http://localhost:8000/health && break
+            sleep 2
+          done
+          curl -fsS -F file=@examples/survey.kml http://localhost:8000/api/files/ > uploaded.json
+          python -c 'import json; r=json.load(open("uploaded.json")); assert r["feature_count"] == 3 and r["measured_count"] == 2'
+      - if: always()
+        run: docker compose logs && docker compose down -v
