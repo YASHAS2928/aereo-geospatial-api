@@ -1,5 +1,3 @@
-"""Single-job process: results cross the boundary as JSON, not pickled exceptions."""
-
 import json
 import logging
 import sys

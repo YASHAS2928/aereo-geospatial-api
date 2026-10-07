@@ -16,7 +16,7 @@ def vertex_count(value):
     if isinstance(value, dict):
         return sum(vertex_count(v) for k, v in value.items() if k in ("coordinates", "geometries"))
     if isinstance(value, (list, tuple)):
-        if value and isinstance(value[0], (int, float)):
+        if isinstance(value[0], (int, float)):
             return 1
         return sum(vertex_count(v) for v in value)
     return 0
@@ -32,10 +32,10 @@ def process_file(path: str, extension: str, source_crs: str | None, settings: Se
             crs, records = read_kml(path, source_crs, settings)
         count = 0
         for index, record in enumerate(records):
-            count += vertex_count(record["geometry"])
+            geom = record["geometry"]
+            count += vertex_count(geom)
             if count > settings.vertices:
                 raise InputError("VERTEX_LIMIT", "Too many coordinate vertices", 413)
-            geom = record["geometry"]
             record.update(
                 index=index,
                 source_crs=crs,

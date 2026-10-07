@@ -42,7 +42,6 @@ def create_app(settings: Settings | None = None):
     async def request_context(request: Request, call_next):
         request.state.request_id = str(uuid.uuid4())
         started = time.monotonic()
-        # Bound request bodies before multipart parsing; actual stream bytes are checked too.
         length = request.headers.get("content-length")
         if length and (not length.isdigit() or int(length) > settings.upload_bytes + 65536):
             response = error_response(request, "UPLOAD_LIMIT", "Request body exceeds limit", 413)

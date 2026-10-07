@@ -1,5 +1,3 @@
-"""Bound multipart bodies before any parser can spool unbounded files."""
-
 from starlette.responses import JSONResponse
 
 
@@ -10,8 +8,7 @@ class BodyLimitMiddleware:
     async def __call__(self, scope, receive, send):
         if scope["type"] != "http" or scope["method"] != "POST":
             return await self.app(scope, receive, send)
-        # Bounded buffering is intentional: at most 10 MiB + multipart overhead per request.
-        # This also covers chunked clients that omit Content-Length.
+        # Buffer before multipart parsing, including requests without Content-Length.
         chunks, size = [], 0
         while True:
             message = await receive()
