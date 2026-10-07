@@ -31,16 +31,14 @@ def test_upload_retrieve_paginate(application):
         info = response.json()
         assert info["feature_count"] == 3
         assert info["measured_count"] == 2
-        assert (
-            client.get(f"/api/files/{info['id']}/").json()["checksum_sha256"]
-            == info["checksum_sha256"]
-        )
+        assert info["created_at"].endswith("Z")
+        assert client.get(f"/api/files/{info['id']}/").json() == info
         page = client.get(f"/api/files/{info['id']}/measurements/?limit=2").json()
         assert page["next_offset"] == 2
         assert page["features"][0]["value"] > 0
         assert page["features"][0]["properties"]["owner"] == "Demo"
     with TestClient(application) as client:
-        assert client.get(f"/api/files/{info['id']}/").status_code == 200
+        assert client.get(f"/api/files/{info['id']}/").json() == info
 
 
 @pytest.mark.parametrize(
