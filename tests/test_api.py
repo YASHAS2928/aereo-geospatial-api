@@ -5,10 +5,11 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import select
+from sqlalchemy import delete, insert, select
+from sqlalchemy.exc import IntegrityError
 
 from app.config import Settings
-from app.db import Base, UploadedFile
+from app.db import Base, Feature, UploadedFile
 from app.main import create_app
 
 
@@ -98,8 +99,6 @@ def test_database_failure_is_atomic(application):
     def fail_feature(mapper, connection, target):
         raise RuntimeError("forced database write failure")
 
-    from app.db import Feature
-
     event.listen(Feature, "before_insert", fail_feature)
     try:
         with TestClient(application) as client:
@@ -146,3 +145,31 @@ def test_concurrent_jobs_have_independent_ids(application):
                 assert application.state.active == 0
 
     asyncio.run(check())
+
+
+@pytest.mark.parametrize("reconnect", [False, True])
+def test_database_rejects_orphan_features(application, reconnect):
+    engine = application.state.engine
+    if reconnect:
+        engine.dispose()
+    with pytest.raises(IntegrityError):
+        with engine.begin() as connection:
+            connection.execute(insert(Feature).values(file_id=str(uuid.uuid4()), index=0, data={}))
+    with engine.connect() as connection:
+        assert not connection.execute(select(Feature.id)).all()
+
+
+def test_deleting_file_cascades_to_features(application):
+    with TestClient(application) as client:
+        response = client.post(
+            "/api/files/",
+            files={"file": ("survey.kml", Path("examples/survey.kml").read_bytes())},
+        )
+        assert response.status_code == 201, response.text
+        file_id = response.json()["id"]
+        with application.state.engine.begin() as connection:
+            assert len(connection.execute(select(Feature.id)).all()) == 3
+            connection.execute(delete(UploadedFile).where(UploadedFile.id == file_id))
+        with application.state.engine.connect() as connection:
+            assert not connection.execute(select(Feature.id)).all()
+        assert client.get(f"/api/files/{file_id}/").status_code == 404
