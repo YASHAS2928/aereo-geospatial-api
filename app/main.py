@@ -4,6 +4,7 @@ import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
+from datetime import timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -76,6 +77,9 @@ def create_app(settings: Settings | None = None):
         return result
 
     def file_info(row):
+        created_at = row.created_at
+        if created_at.tzinfo is None:
+            created_at = created_at.replace(tzinfo=timezone.utc)
         return {
             "id": row.id,
             "filename": row.filename,
@@ -86,7 +90,7 @@ def create_app(settings: Settings | None = None):
             "skipped_count": row.feature_count - row.measured_count,
             "checksum_sha256": row.checksum,
             "size_bytes": row.size_bytes,
-            "created_at": row.created_at.isoformat(),
+            "created_at": created_at.isoformat(),
         }
 
     @app.get("/health", tags=["operations"])
