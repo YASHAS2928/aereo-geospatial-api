@@ -15,10 +15,10 @@ Executed on 2026-10-07, Python 3.12, Linux.
 | Ruff lint and formatting | Passed |
 | Alembic migration on blank SQLite | Passed |
 | Alembic model/schema drift check | Passed |
-| PostgreSQL local runtime | Not verified: this execution environment cannot launch PostgreSQL under a non-root mapped user |
+| PostgreSQL migrations and tests | Passed in hosted CI run 37670360190: 43 tests and schema drift check |
 | Docker image / Compose | Not verified: Docker runtime unavailable here |
 | GitHub Actions | Workflow authored; no hosted execution yet |
-| Public GitHub publication | Pending |
+| Public GitHub publication | Published: https://github.com/YASHAS2928/aereo-geospatial-api |
 
 ## Release gate
 
