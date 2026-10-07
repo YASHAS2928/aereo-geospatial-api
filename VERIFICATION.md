@@ -54,3 +54,9 @@ The subprocess boundary is retained because native GIS work needs an enforceable
 The API is a bounded local-survey implementation. It does not provide authentication, global capacity control, broad KML support or certified measurement accuracy. The six-degree projection domain is documented. Passing tests do not establish candidate understanding or production readiness. The application form remains unsubmitted.
 
 Local checks after the worker/readability review: 43 tests passed; Ruff lint and formatting passed; Alembic reported no schema drift. Push-triggered CI checks the published revision separately.
+
+## Database integrity follow-up
+
+SQLite now enables foreign-key enforcement on every new database connection. Tests verify rejection and rollback of orphan feature inserts both before and after recreating the connection pool, and removal of child features when the parent file is deleted. The same tests run against PostgreSQL in CI. No schema migration is needed: the existing foreign key already declares cascading deletion.
+
+Local validation after this change: 46 tests passed, Ruff lint/format passed and Alembic reported no schema drift. SQLite files with pre-existing orphan rows are not repaired by enabling constraints; those rows require a separate integrity audit if importing an older database.

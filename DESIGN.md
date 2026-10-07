@@ -21,7 +21,7 @@ flowchart TD
 
 A fresh subprocess costs startup time, but provides a killable deadline and avoids one malformed GIS job taking down another. It communicates via temporary JSON rather than pickled custom exceptions. Uploads have independent temporary directories, always cleaned during normal error/timeout handling. Abrupt whole-host termination may leave temporary directories; a deployment should apply an age-based cleanup policy.
 
-Database writes execute in a thread outside the event loop. One transaction inserts file and features. Unique `(file_id,index)` prevents duplicate feature indices. PostgreSQL enforces the file foreign key; SQLite development mode does not enable foreign-key enforcement. Raw uploads are discarded after processing; metadata, checksum and extracted records persist. Repeated uploads receive separate IDs. PostgreSQL JSON storage suffices because the API does not perform spatial querying; PostGIS would add no value to these endpoints.
+Database writes execute in a thread outside the event loop. One transaction inserts file and features. Unique `(file_id,index)` prevents duplicate feature indices. PostgreSQL and SQLite enforce the file foreign key and cascading deletion. SQLite enables foreign keys on each new connection, including connections opened after pool disposal. Raw uploads are discarded after processing; metadata, checksum and extracted records persist. Repeated uploads receive separate IDs. PostgreSQL JSON storage suffices because the API does not perform spatial querying; PostGIS would add no value to these endpoints.
 
 ## Projection policy
 
