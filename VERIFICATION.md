@@ -1,6 +1,10 @@
 # Verification record
 
-Executed on 2026-10-07, Python 3.12, Linux.
+Verified locally and on GitHub-hosted Linux runners, Python 3.12.
+
+Passing hosted run: https://github.com/YASHAS2928/aereo-geospatial-api/actions/runs/37670721763
+
+Verified implementation commit: `68352b7e1d78ac394a6fbf15aac86b84a033f41f` (8 October 2026 IST).
 
 | Check | Actual result |
 |---|---|
@@ -16,12 +20,14 @@ Executed on 2026-10-07, Python 3.12, Linux.
 | Alembic migration on blank SQLite | Passed |
 | Alembic model/schema drift check | Passed |
 | PostgreSQL migrations and tests | Passed in hosted CI run 37670360190: 43 tests and schema drift check |
-| Docker image / Compose | Not verified: Docker runtime unavailable here |
-| GitHub Actions | Workflow authored; no hosted execution yet |
+| Docker image / Compose | Passed in hosted CI: clean build, native GIS imports, PostgreSQL-backed service startup |
+| GitHub Actions | Both test and container jobs passed in run 37670721763 |
 | Public GitHub publication | Published: https://github.com/YASHAS2928/aereo-geospatial-api |
 
-## Release gate
+## Release result
 
-Before sending the assignment link, run the PostgreSQL and container jobs in the provided GitHub Actions workflow. Fix failures and preserve the passing run link. Verify both upload formats through the hosted or container service and rehearse a short explanation of projection policy, error isolation and rollback.
+The engineering release gates have passed. Hosted container CI exercises both supplied file formats and retrieves polygon measurements. PostgreSQL migrations, schema drift checks and all 43 tests pass.
 
-The source package implements the minimum API and documented local-survey measurement policy. It is not labelled submission-ready until the outstanding database/container checks pass. No selection guarantee, production-scale benchmark or survey-grade accuracy claim is made.
+The first container run caught a missing Fiona native dependency (`libexpat.so.1`). The Dockerfile now installs `libexpat1` and verifies Fiona/Shapely/PyProj imports during image build. This was a runtime defect, fixed and independently verified in a clean container.
+
+The repository is ready for technical submission review. The application form has not been submitted. Rehearse projection semantics, file-validation decisions and transaction rollback before interview. No selection guarantee, production-scale benchmark or survey-grade accuracy claim is made.
