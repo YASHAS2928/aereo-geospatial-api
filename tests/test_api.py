@@ -39,7 +39,6 @@ def test_upload_retrieve_paginate(application):
         assert page["next_offset"] == 2
         assert page["features"][0]["value"] > 0
         assert page["features"][0]["properties"]["owner"] == "Demo"
-    # Persistence survives application/worker lifecycle restart.
     with TestClient(application) as client:
         assert client.get(f"/api/files/{info['id']}/").status_code == 200
 
@@ -75,7 +74,6 @@ def test_upload_limit_without_content_length(tmp_path):
     with TestClient(app) as client:
         response = client.post("/api/files/", files={"file": ("a.kml", b"x" * 100)})
         assert response.status_code == 413
-        # Raw request limit, including a client whose body is supplied incrementally.
         response = client.post(
             "/api/files/",
             content=iter([b"x" * 70000]),
