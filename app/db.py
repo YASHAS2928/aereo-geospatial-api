@@ -1,6 +1,15 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, UniqueConstraint, create_engine
+from sqlalchemy import (
+    JSON,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+    create_engine,
+    event,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 
 
@@ -35,4 +44,14 @@ class Feature(Base):
 def database(url):
     options = {"check_same_thread": False} if url.startswith("sqlite") else {}
     engine = create_engine(url, connect_args=options, pool_pre_ping=True)
+    if engine.dialect.name == "sqlite":
+
+        @event.listens_for(engine, "connect")
+        def enable_foreign_keys(connection, connection_record):
+            cursor = connection.cursor()
+            try:
+                cursor.execute("PRAGMA foreign_keys=ON")
+            finally:
+                cursor.close()
+
     return engine, sessionmaker(engine, expire_on_commit=False)
