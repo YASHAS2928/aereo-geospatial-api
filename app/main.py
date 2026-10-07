@@ -1,12 +1,9 @@
 import asyncio
 import hashlib
-import json
 import logging
-import sys
 import time
 import uuid
 from contextlib import asynccontextmanager
-from dataclasses import asdict
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -20,6 +17,7 @@ from app.config import Settings
 from app.db import Feature, UploadedFile, database
 from app.errors import InputError
 from app.schemas import FileInfo, MeasurementPage
+from app.worker import run_job
 
 logger = logging.getLogger("aereo.api")
 
@@ -119,43 +117,7 @@ def create_app(settings: Settings | None = None):
                         target.write(chunk)
                 if not size:
                     raise InputError("EMPTY_UPLOAD", "File is empty")
-                job_input, job_output = Path(folder) / "job.json", Path(folder) / "result.json"
-                job_input.write_text(
-                    json.dumps(
-                        {
-                            "path": str(path),
-                            "extension": extension,
-                            "source_crs": source_crs,
-                            "settings": asdict(settings),
-                        }
-                    )
-                )
-                process = await asyncio.create_subprocess_exec(
-                    sys.executable,
-                    "-m",
-                    "app.worker",
-                    str(job_input),
-                    str(job_output),
-                    stdout=asyncio.subprocess.DEVNULL,
-                    stderr=None,
-                )
-                try:
-                    await asyncio.wait_for(process.wait(), settings.timeout_seconds)
-                    if process.returncode != 0 or not job_output.exists():
-                        raise InputError("PROCESSING_FAILED", "Worker failed", 500)
-                    result = json.loads(job_output.read_text())
-                    if "error" in result:
-                        error = result["error"]
-                        raise InputError(error["code"], error["message"], error["status"])
-                    crs, records = result["crs"], result["features"]
-                except TimeoutError as exc:
-                    raise InputError(
-                        "PROCESSING_TIMEOUT", "Processing time limit exceeded", 422
-                    ) from exc
-                finally:
-                    if process.returncode is None:
-                        process.kill()
-                    await process.wait()
+                crs, records = await run_job(path, source_crs, settings)
                 measured = sum(r["measurement_status"] == "MEASURED" for r in records)
                 warnings = any(
                     r["measurement_status"] not in ("MEASURED", "NOT_APPLICABLE") for r in records
