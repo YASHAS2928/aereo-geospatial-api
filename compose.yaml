@@ -1,0 +1,23 @@
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://aereo:aereo@db:5432/aereo
+      PROJ_NETWORK: "OFF"
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: aereo
+      POSTGRES_PASSWORD: aereo
+      POSTGRES_DB: aereo
+    volumes: ["database:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aereo"]
+      interval: 2s
+      retries: 20
+volumes:
+  database:
