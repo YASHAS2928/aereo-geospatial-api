@@ -12,7 +12,7 @@ from app.errors import InputError
 
 
 def plain(value):
-    if isinstance(value, dict) or hasattr(value, "items"):
+    if hasattr(value, "items"):
         return {str(k): plain(v) for k, v in value.items()}
     if isinstance(value, (list, tuple)):
         return [plain(v) for v in value]
@@ -140,11 +140,13 @@ def kml_geometry(node):
         geometries = [kml_geometry(child) for child in node]
         types = {g["type"] for g in geometries}
         multi = {"Point": "MultiPoint", "LineString": "MultiLineString", "Polygon": "MultiPolygon"}
-        if len(types) == 1 and next(iter(types)) in multi:
-            return {
-                "type": multi[next(iter(types))],
-                "coordinates": [g["coordinates"] for g in geometries],
-            }
+        if len(types) == 1:
+            kind = next(iter(types))
+            if kind in multi:
+                return {
+                    "type": multi[kind],
+                    "coordinates": [g["coordinates"] for g in geometries],
+                }
         return {"type": "GeometryCollection", "geometries": geometries}
     raise ValueError("Unsupported KML geometry")
 

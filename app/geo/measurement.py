@@ -1,5 +1,3 @@
-"""Horizontal ellipsoidal measurements via feature-local projected coordinate systems."""
-
 import math
 
 import numpy as np
@@ -43,8 +41,7 @@ def measure(geometry, source_crs):
             raise ValueError("Non-finite coordinates")
         if west < -180 or east > 180 or south < -90 or north > 90:
             raise ValueError("Coordinates outside longitude/latitude range")
-        # Local surveys can cross zone or equator boundaries. A feature-local projection
-        # avoids artificial boundary restrictions while bounding distortion explicitly.
+        # Limit distortion without rejecting local features across UTM zones or the equator.
         if east - west > 6 or north - south > 6:
             return {
                 **result,
@@ -56,7 +53,7 @@ def measure(geometry, source_crs):
         method = "laea" if polygon else "aeqd"
         target = CRS.from_proj4(f"+proj={method} +lat_0={lat} +lon_0={lon} +datum=WGS84 +units=m")
         projector = Transformer.from_crs(4326, target, always_xy=True, allow_ballpark=False)
-        # Densify geographic straight segments to limit projection/chord approximation.
+        # Subdivide long edges before projection to reduce chord approximation error.
         coordinates = get_coordinates(wgs)
         estimated_vertices = len(coordinates)
         if len(coordinates) > 1:
@@ -85,7 +82,6 @@ def measure(geometry, source_crs):
             warning_code=None,
         )
     except (ValueError, TypeError, ShapelyError, ProjError) as exc:
-        # GIS failures are isolated to the feature; do not expose native driver details.
         return {
             **result,
             "measurement_status": "TRANSFORMATION_FAILED",
