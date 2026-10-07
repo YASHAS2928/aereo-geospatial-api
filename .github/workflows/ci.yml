@@ -39,6 +39,8 @@ jobs:
             sleep 2
           done
           curl -fsS -F file=@examples/survey.kml http://localhost:8000/api/files/ > uploaded.json
-          python -c 'import json; r=json.load(open("uploaded.json")); assert r["feature_count"] == 3 and r["measured_count"] == 2'
+          python -c 'import json,urllib.request; r=json.load(open("uploaded.json")); assert r["feature_count"] == 3 and r["measured_count"] == 2; p=json.load(urllib.request.urlopen("http://localhost:8000/api/files/"+r["id"]+"/measurements/")); assert p["count"] == 3 and p["features"][0]["value"] > 0'
+          curl -fsS -F file=@examples/survey.zip http://localhost:8000/api/files/ > shapefile.json
+          python -c 'import json; r=json.load(open("shapefile.json")); assert r["feature_count"] == 1 and r["measured_count"] == 1'
       - if: always()
         run: docker compose logs && docker compose down -v
